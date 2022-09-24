@@ -7,10 +7,14 @@ public:
 	List();
 	~List();
 	void AddLast(T data);
+	void AddFront(T data);
+	void AddByIndex(T data, int index);
 	void DeleteFront();
+	void DeleteAt(int index);
+	void DeleteEnd();
 	void Clear();
 	int GetElementCount() { return elementCount; }
-	T& operator[](const int index);
+	T& operator[](int index);
 private:
 	template<class T>
 	class Node
@@ -48,10 +52,32 @@ void List<T>::AddLast(T data)
 		head = new Node<T>(data);
 	else
 	{
-		Node<T>* currentElement = this->head;
-		while (currentElement->pNext != nullptr)
-			currentElement = currentElement->pNext;
-		currentElement->pNext = new Node<T>(data);
+		Node<T>* currentPosition = this->head;
+		while (currentPosition->pNext != nullptr)
+			currentPosition = currentPosition->pNext;
+		currentPosition->pNext = new Node<T>(data);
+	}
+	++elementCount;
+}
+
+template<class T>
+void List<T>::AddFront(T data)
+{
+	head = new Node<T>(data, head);
+	++elementCount;
+}
+
+template<class T>
+void List<T>::AddByIndex(T data, int index)
+{
+	if (index == 0)
+		AddFront(data);
+	else
+	{
+		Node<T>* currentPosition = this->head;
+		for (int i = 0; i < index-1; i++)
+			currentPosition = currentPosition->pNext;
+		currentPosition->pNext = new Node<T>(data, currentPosition->pNext);
 	}
 	++elementCount;
 }
@@ -66,6 +92,29 @@ void List<T>::DeleteFront()
 }
 
 template<class T>
+void List<T>::DeleteEnd()
+{
+	DeleteAt(elementCount - 1);
+}
+
+template<class T>
+void List<T>::DeleteAt(int index)
+{
+	if (index == 0)
+		DeleteFront();
+	else
+	{
+		Node<T>* currentPosition = this->head;
+		for (int i = 0; i < --index; i++)
+			currentPosition = currentPosition->pNext;
+		Node<T>* toDelete = currentPosition->pNext;
+		currentPosition->pNext = toDelete->pNext;
+		delete toDelete;
+	}
+	--elementCount;
+}
+
+template<class T>
 void List<T>::Clear()
 {
 	while (head)
@@ -73,15 +122,15 @@ void List<T>::Clear()
 }
 
 template<class T>
-T& List<T>::operator[](const int index)
+T& List<T>::operator[](int index)
 {
 	int counter = 0;
-	Node<T>* currentElement = this->head;
-	while (currentElement != nullptr)
+	Node<T>* currentPosition = this->head;
+	while (currentPosition != nullptr)
 	{
 		if (counter == index)
-			return currentElement->data;
-		currentElement = currentElement->pNext;
+			return currentPosition->data;
+		currentPosition = currentPosition->pNext;
 		++counter;
 	}
 }
@@ -90,13 +139,14 @@ int main()
 {
 	List<int> linkedList;
 	linkedList.AddLast(2);
-	linkedList.AddLast(5);
 	linkedList.AddLast(7);
+	linkedList.AddFront(1);
 	for (int i = 0; i < linkedList.GetElementCount(); i++)
 		printf("%d ", linkedList[i]);
-	linkedList.Clear();
-	printf("\nAfter called Clear method \n");
+	printf("\n");
+	linkedList.DeleteEnd();
 	for (int i = 0; i < linkedList.GetElementCount(); i++)
 		printf("%d ", linkedList[i]);
+	printf("\n");
 	system("pause");
 }

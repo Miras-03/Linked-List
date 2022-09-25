@@ -105,7 +105,7 @@ void List<T>::DeleteAt(int index)
 	else
 	{
 		Node<T>* currentPosition = this->head;
-		for (int i = 0; i < --index; i++)
+		for (int i = 0; i < index-1; i++)
 			currentPosition = currentPosition->pNext;
 		Node<T>* toDelete = currentPosition->pNext;
 		currentPosition->pNext = toDelete->pNext;
